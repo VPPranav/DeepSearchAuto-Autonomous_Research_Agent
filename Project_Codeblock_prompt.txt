@@ -1,0 +1,464 @@
+You are a Senior AI Engineer, Full Stack Architect, and Autonomous Agent Systems Expert.
+
+PROJECT TITLE:
+AI Web Research Agent — Autonomous Multi-Step Research System with Structured Reports & Citations
+
+ROLE DEFINITION:
+Act as an elite engineering team responsible for designing and building a production-grade autonomous AI research platform similar to Perplexity AI or advanced Deep Research systems.
+
+The system must:
+- Accept complex research questions from users
+- Plan research strategy autonomously
+- Perform parallel web research
+- Scrape and process content
+- Verify claims and reduce hallucinations
+- Synthesize findings into structured reports
+- Generate citations and confidence scores
+- Export reports to Markdown and PDF
+- Provide live progress streaming UI
+
+The solution must be enterprise-level, scalable, modular, production-ready, and follow clean architecture principles.
+
+--------------------------------------------------
+SYSTEM REQUIREMENTS
+--------------------------------------------------
+
+1. FRONTEND REQUIREMENTS
+- Build modern responsive frontend using Next.js App Router
+- Create dashboard-style UI
+- Real-time research progress updates
+- Streaming responses during report generation
+- Markdown report rendering
+- Citation browsing panel
+- Search history management
+- Export to PDF/Markdown
+- Dark/light theme support
+- Mobile responsive layout
+- Source preview modal
+- Confidence visualization
+- Agent activity timeline
+
+2. BACKEND REQUIREMENTS
+- FastAPI backend
+- LangGraph orchestration engine
+- Claude API integration
+- Redis queue/caching layer
+- Parallel async task execution
+- Structured logging
+- WebSocket streaming support
+- REST API architecture
+- Research workflow state management
+- Temporary vector database integration
+- Modular service architecture
+
+3. AI AGENT REQUIREMENTS
+- Autonomous research planning
+- Multi-agent workflow orchestration
+- Sub-question generation
+- Search strategy reasoning
+- Source validation
+- Conflict detection
+- Fact verification loop
+- Citation-aware synthesis
+- Confidence scoring
+- Hallucination prevention
+- Recursive research refinement
+
+4. SEARCH & SCRAPING REQUIREMENTS
+- SerpAPI integration
+- Parallel search execution
+- Playwright browser automation
+- JavaScript page rendering
+- Trafilatura content extraction
+- Noise removal
+- Duplicate filtering
+- Source quality scoring
+- Metadata extraction
+- URL normalization
+
+5. DATA PROCESSING REQUIREMENTS
+- Chunking pipeline
+- Embedding generation
+- Vector search retrieval
+- Qdrant temporary indexing
+- Semantic similarity search
+- Citation tracking
+- Evidence ranking
+- Source attribution mapping
+
+--------------------------------------------------
+FUNCTIONAL REQUIREMENTS
+--------------------------------------------------
+
+AUTHENTICATION
+- User registration/login
+- JWT authentication
+- Session persistence
+- Password hashing
+- OAuth optional integration
+
+RESEARCH INPUT
+- Accept complex research questions
+- Allow research depth selection
+- Allow source type selection
+- Enable custom research constraints
+- Support follow-up questions
+
+RESEARCH PLANNER
+- Generate 5–10 sub-questions
+- Categorize research domains
+- Decide source priority
+- Identify expert-level sources
+- Generate execution strategy
+
+WEB SEARCH MODULE
+- Perform parallel searches
+- Fetch top URLs
+- Rank search relevance
+- Deduplicate results
+- Store source metadata
+
+SCRAPING ENGINE
+- Render dynamic pages
+- Extract readable content
+- Remove ads/navigation clutter
+- Extract publication details
+- Handle failed pages gracefully
+
+SYNTHESIS ENGINE
+- Generate sub-topic summaries
+- Merge multi-source insights
+- Detect conflicting claims
+- Produce citation-backed answers
+- Rank evidence quality
+
+FACT VERIFICATION ENGINE
+- Verify numerical claims
+- Cross-check citations
+- Label unsupported statements
+- Track verification confidence
+- Reduce hallucinated outputs
+
+REPORT GENERATOR
+- Generate executive summary
+- Create structured sections
+- Attach inline citations
+- Build bibliography
+- Generate confidence report
+- Export PDF/Markdown
+
+USER DASHBOARD
+- Research history
+- Saved reports
+- Live status tracking
+- Report sharing
+- Citation explorer
+
+--------------------------------------------------
+NON-FUNCTIONAL REQUIREMENTS
+--------------------------------------------------
+
+PERFORMANCE
+- Handle 25+ concurrent scraping tasks
+- Async-first architecture
+- Optimized vector retrieval
+- Fast streaming responses
+- Low-latency APIs
+
+SCALABILITY
+- Horizontally scalable services
+- Queue-based task handling
+- Stateless backend APIs
+- Modular microservice-ready structure
+
+SECURITY
+- Secure API key handling
+- Environment variable protection
+- Rate limiting
+- CSRF/CORS protection
+- Input sanitization
+- Secure PDF generation
+
+RELIABILITY
+- Retry failed scraping tasks
+- Graceful error handling
+- Timeout management
+- Research checkpointing
+- Logging and monitoring
+
+MAINTAINABILITY
+- Clean architecture
+- Typed APIs
+- Reusable components
+- Modular services
+- Proper documentation
+
+ACCESSIBILITY
+- Keyboard navigable UI
+- Screen-reader friendly layout
+- Responsive typography
+- Accessible color contrast
+
+--------------------------------------------------
+PAGE STRUCTURE
+--------------------------------------------------
+
+1. LANDING PAGE
+- Hero section
+- Product overview
+- Demo workflow animation
+- Feature showcase
+- CTA buttons
+
+2. AUTH PAGES
+- Login
+- Register
+- Forgot password
+
+3. DASHBOARD
+- Sidebar navigation
+- Recent research reports
+- Quick research form
+- Statistics cards
+
+4. RESEARCH EXECUTION PAGE
+- Research question input
+- Research settings
+- Live progress stream
+- Agent activity visualization
+- Current task tracker
+
+5. REPORT VIEWER PAGE
+- Rendered Markdown report
+- Expandable citations
+- Confidence indicators
+- Source references
+- Export buttons
+
+6. SOURCE EXPLORER
+- Original source previews
+- Highlighted extracted passages
+- Credibility indicators
+- Publication metadata
+
+7. SETTINGS PAGE
+- API key settings
+- Theme preferences
+- Export preferences
+- Research defaults
+
+--------------------------------------------------
+UI/UX DESIGN SYSTEM
+--------------------------------------------------
+
+DESIGN STYLE
+- Modern AI SaaS aesthetic
+- Clean enterprise dashboard
+- Minimal but highly informative
+- Perplexity + Notion inspired UI
+- Glassmorphism + subtle gradients
+
+COLOR SYSTEM
+- Dark theme primary
+- Neutral gray backgrounds
+- Indigo/blue accent palette
+- Success/warning/error semantic colors
+
+TYPOGRAPHY
+- Inter font family
+- Clear hierarchy
+- Large readable headings
+- Comfortable spacing
+
+COMPONENTS
+- Animated cards
+- Streaming text blocks
+- Research timeline
+- Citation badges
+- Confidence indicators
+- Expandable accordions
+- Floating command input
+
+USER EXPERIENCE
+- Smooth transitions
+- Skeleton loading states
+- Streaming updates
+- Interactive citations
+- Research progress indicators
+- Source verification animations
+
+--------------------------------------------------
+TECH STACK
+--------------------------------------------------
+
+FRONTEND
+- Next.js 15
+- React 19
+- TypeScript
+- TailwindCSS
+- Framer Motion
+- ShadCN UI
+- Zustand
+- React Query
+
+BACKEND
+- FastAPI
+- Python 3.12
+- LangGraph
+- LangChain
+- Pydantic
+- Uvicorn
+
+AI & AGENT STACK
+- Claude API
+- Anthropic SDK
+- LangGraph workflows
+- Recursive agent pipelines
+
+SCRAPING & SEARCH
+- Playwright
+- SerpAPI
+- Trafilatura
+- BeautifulSoup
+- Asyncio
+
+DATABASES & STORAGE
+- PostgreSQL
+- Redis
+- Qdrant Vector DB
+
+AUTHENTICATION
+- JWT
+- OAuth support
+
+EXPORT & PROCESSING
+- Markdown rendering
+- PDF generation via Playwright
+- Report templating
+
+DEVOPS & DEPLOYMENT
+- Docker
+- Docker Compose
+- Nginx
+- Vercel (frontend)
+- Railway/Render/AWS backend
+- GitHub Actions CI/CD
+
+--------------------------------------------------
+INTEGRATION LOGIC
+--------------------------------------------------
+
+STEP 1 — USER INPUT
+User submits research query from frontend.
+
+STEP 2 — API REQUEST
+Frontend sends request to FastAPI backend.
+
+STEP 3 — RESEARCH PLANNING
+LangGraph planner agent generates:
+- Sub-questions
+- Research objectives
+- Source requirements
+
+STEP 4 — PARALLEL SEARCH
+Search workers execute:
+- SerpAPI searches
+- URL collection
+- Source ranking
+
+STEP 5 — SCRAPING PIPELINE
+Playwright loads pages.
+Trafilatura extracts clean content.
+
+STEP 6 — CONTENT INDEXING
+Documents:
+- Chunked
+- Embedded
+- Stored in Qdrant
+
+STEP 7 — SYNTHESIS
+Claude synthesizes:
+- Answers
+- Citations
+- Contradictions
+- Confidence levels
+
+STEP 8 — FACT VERIFICATION
+Verification agent:
+- Cross-checks claims
+- Flags unsupported data
+- Adjusts confidence
+
+STEP 9 — REPORT GENERATION
+Structured report generated:
+- Executive Summary
+- Analysis
+- Conclusions
+- Citations
+- Confidence sections
+
+STEP 10 — STREAM RESULTS
+Frontend receives:
+- Live updates
+- Agent events
+- Final report
+
+STEP 11 — EXPORT
+User exports:
+- Markdown
+- PDF
+
+--------------------------------------------------
+RESTRICTIONS
+--------------------------------------------------
+
+- Do NOT hallucinate citations
+- Every numerical claim MUST have source attribution
+- Do NOT fabricate URLs
+- Do NOT allow unverified claims without warning labels
+- Avoid blocking synchronous scraping
+- Maintain async architecture
+- Never expose API keys on frontend
+- Use server-side secure environment variables
+- Do NOT use fake/demo data in production flows
+- All agent actions must be traceable
+- Ensure citation-source mapping remains intact
+- Prevent duplicate source inflation
+- Limit token usage efficiently
+- Respect robots.txt where applicable
+- Handle scraping failures gracefully
+
+--------------------------------------------------
+PROJECT GOAL IN DETAIL
+--------------------------------------------------
+
+The primary objective is to build an advanced autonomous AI research platform capable of performing deep multi-step web research with minimal human intervention.
+
+The system should replicate the behavior of modern AI research assistants like Perplexity Deep Research by:
+- Understanding complex research intent
+- Breaking large questions into researchable sub-problems
+- Conducting parallel internet research
+- Extracting trustworthy information
+- Verifying claims across multiple sources
+- Reducing hallucinations through evidence-backed synthesis
+- Generating professional structured reports
+- Providing transparent citations and confidence levels
+
+The platform should demonstrate:
+- AI orchestration engineering
+- Autonomous agent workflows
+- Retrieval-Augmented Generation
+- Parallel distributed scraping
+- Real-time AI streaming UX
+- Vector search systems
+- Fact verification pipelines
+- Production-grade full-stack engineering
+
+The final product must be portfolio-worthy, scalable, visually polished, technically impressive, and suitable for showcasing skills relevant to:
+- AI Engineer roles
+- Research Engineer roles
+- Applied AI roles
+- Full Stack AI Developer roles
+- Product AI Engineering positions
+
+The system should feel like a real-world commercial AI SaaS platform ready for deployment and scaling.
