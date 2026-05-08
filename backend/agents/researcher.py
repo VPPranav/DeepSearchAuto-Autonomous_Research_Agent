@@ -17,13 +17,16 @@ class AgentState(TypedDict):
 
 anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
 
+import httpx
+
 def get_llm():
     if anthropic_api_key:
         return ChatAnthropic(
             model="claude-3-haiku-20240307", 
             anthropic_api_key=anthropic_api_key,
             timeout=30.0,
-            max_retries=2
+            max_retries=2,
+            http_client=httpx.AsyncClient()
         )
     return None
 

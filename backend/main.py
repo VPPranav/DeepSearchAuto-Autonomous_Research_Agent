@@ -4,7 +4,18 @@ from pydantic import BaseModel
 import uuid
 import asyncio
 from typing import Dict
+import os
 from dotenv import load_dotenv
+
+# Unset proxy variables to prevent httpx 0.28.0+ 'proxies' keyword crash
+if "HTTP_PROXY" in os.environ:
+    del os.environ["HTTP_PROXY"]
+if "HTTPS_PROXY" in os.environ:
+    del os.environ["HTTPS_PROXY"]
+if "http_proxy" in os.environ:
+    del os.environ["http_proxy"]
+if "https_proxy" in os.environ:
+    del os.environ["https_proxy"]
 
 load_dotenv()
 
