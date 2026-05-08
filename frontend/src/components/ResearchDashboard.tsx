@@ -27,6 +27,9 @@ interface ResearchReport {
   sub_topics: SubQuestion[];
   conclusion: string;
   overall_confidence: number;
+  metrics?: any;
+  keywords?: any[];
+  relationships?: any[];
 }
 
 interface ResearchState {
