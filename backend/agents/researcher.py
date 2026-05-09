@@ -17,16 +17,15 @@ class AgentState(TypedDict):
 
 anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
 
-import httpx
 
 def get_llm():
     if anthropic_api_key:
+        # Do NOT pass http_client — causes 'proxies' crash on httpx>=0.28
         return ChatAnthropic(
-            model="claude-3-haiku-20240307", 
+            model="claude-3-haiku-20240307",
             anthropic_api_key=anthropic_api_key,
             timeout=30.0,
             max_retries=2,
-            http_client=httpx.AsyncClient()
         )
     return None
 
@@ -59,7 +58,6 @@ async def plan_research(state: AgentState):
         try:
             res = await safe_ainvoke(llm, messages, timeout=12.0)
             content = res.content.strip()
-            # Strip markdown code fences if present
             if content.startswith("```"):
                 content = content.split("```")[1]
                 if content.startswith("json"):
@@ -78,7 +76,6 @@ async def search_and_scrape(state: AgentState):
     print("[SEARCH] Starting search and scrape...")
     sub_questions = state["sub_questions"]
 
-    # Use asyncio.gather for parallel search and scrape across sub-questions
     async def process_sub_question(sq: SubQuestion):
         print(f"[SEARCH] Searching for: {sq.question}")
         sources = await perform_search(sq.question, num_results=3)
@@ -99,26 +96,22 @@ async def synthesize(state: AgentState):
     query = state["request"].query
     sub_questions = state["sub_questions"]
 
-    # Build context from scraped sources
     context_parts = []
     for sq in sub_questions:
         context_parts.append(f"\n### Sub-question: {sq.question}")
-        for src in sq.sources[:2]:  # limit to 2 sources per question for token efficiency
+        for src in sq.sources[:2]:
             if src.content and src.content != "Failed to scrape":
                 snippet = src.content[:1500] if src.content else ""
                 context_parts.append(f"**Source**: {src.title} ({src.url})\n{snippet}")
 
     context = "\n".join(context_parts)
 
-    # Mock synthesis as fallback
     executive_summary = f"This comprehensive report examines {query} through multiple lenses including history, technical components, recent developments, challenges, and future outlook. The research synthesizes data from {sum(len(sq.sources) for sq in sub_questions)} sources across {len(sub_questions)} key research dimensions."
     conclusion = f"Based on the research gathered, {query} represents a significant and evolving field. The evidence suggests continued growth and development, with both promising opportunities and notable challenges ahead. Further research and monitoring of developments is recommended."
     confidence = 0.75
-    confidence = 0.75
-    
+
     from models.schema import Keyword, Relationship, ConfidenceMetrics
-    
-    # Fallback mock data to ensure visualizations render even if API fails
+
     keywords = [
         Keyword(keyword=query, intensity=95, category="Primary"),
         Keyword(keyword="Technology", intensity=80, category="Context"),
@@ -126,14 +119,14 @@ async def synthesize(state: AgentState):
         Keyword(keyword="Impact", intensity=65, category="Analysis"),
         Keyword(keyword="Future Trends", intensity=50, category="Analysis"),
     ]
-    
+
     relationships = [
         Relationship(source=query, target="Global Market", label="impacts"),
         Relationship(source=query, target="Future Development", label="drives"),
         Relationship(source="Current Research", target=query, label="explores"),
         Relationship(source=query, target="Industry Standards", label="shapes"),
     ]
-    
+
     metrics = ConfidenceMetrics(
         overall=0.75,
         source_agreement=0.80,
@@ -141,14 +134,12 @@ async def synthesize(state: AgentState):
         hallucination_risk=0.20
     )
 
-    # Per-question answers
     for sq in sub_questions:
         sq.answer = f"Research gathered from {len(sq.sources)} sources covering various aspects of this sub-topic."
 
     llm = get_llm()
     if llm and context.strip():
         try:
-            # Generate executive summary
             summary_messages = [
                 SystemMessage(content="""You are a research synthesis expert. Based on the provided research context, 
                 write a professional, comprehensive executive summary (3-4 paragraphs) for the research report.
@@ -159,21 +150,20 @@ async def synthesize(state: AgentState):
             summary_res = await safe_ainvoke(llm, summary_messages, timeout=20.0)
             executive_summary = summary_res.content.strip()
 
-            # Generate per-question answers
             ans_tasks = []
             for sq in sub_questions:
                 src_context = ""
                 for src in sq.sources[:2]:
                     if src.content and src.content != "Failed to scrape":
                         src_context += f"{src.title}: {src.content[:800]}\n"
-                
+
                 if src_context:
                     ans_messages = [
                         SystemMessage(content="You are a research analyst. Answer the given sub-question based only on the provided source context. Be concise (2-3 sentences). Acknowledge if sources are insufficient."),
                         HumanMessage(content=f"Question: {sq.question}\n\nSource Context:\n{src_context}\n\nAnswer:")
                     ]
                     ans_tasks.append((sq, safe_ainvoke(llm, ans_messages, timeout=12.0)))
-            
+
             if ans_tasks:
                 sq_objects = [t[0] for t in ans_tasks]
                 sq_coros = [t[1] for t in ans_tasks]
@@ -181,7 +171,6 @@ async def synthesize(state: AgentState):
                 for sq_obj, res in zip(sq_objects, sq_results):
                     sq_obj.answer = res.content.strip()
 
-            # Generate conclusion
             conc_messages = [
                 SystemMessage(content="You are a research analyst. Write a concise conclusion (2 paragraphs) for this research report. Summarize key takeaways and suggest next steps or areas for further research."),
                 HumanMessage(content=f"Research Topic: {query}\n\nExecutive Summary:\n{executive_summary[:2000]}\n\nWrite conclusion:")
@@ -190,7 +179,6 @@ async def synthesize(state: AgentState):
             conclusion = conc_res.content.strip()
             confidence = 0.88
 
-            # Extract advanced analysis
             adv_messages = [
                 SystemMessage(content="You are a data extraction AI. Based on the text, extract: 1. Top 5-10 keywords/topics with intensity (1-100) and category. 2. 5-10 entity relationships (source, target, label). 3. Confidence metrics (overall, source_agreement, evidence_strength, hallucination_risk - each 0.0 to 1.0). Return strictly valid JSON containing 'keywords', 'relationships', and 'metrics' keys without markdown formatting."),
                 HumanMessage(content=f"Topic: {query}\n\nSummary:\n{executive_summary}\n\nExtract JSON:")
@@ -203,7 +191,7 @@ async def synthesize(state: AgentState):
                     if adv_content.startswith("json"):
                         adv_content = adv_content[4:]
                 adv_data = json.loads(adv_content.strip())
-                
+
                 from models.schema import Keyword, Relationship, ConfidenceMetrics
                 if "keywords" in adv_data:
                     keywords = [Keyword(**k) for k in adv_data["keywords"]]

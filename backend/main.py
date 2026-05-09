@@ -7,15 +7,9 @@ from typing import Dict
 import os
 from dotenv import load_dotenv
 
-# Unset proxy variables to prevent httpx 0.28.0+ 'proxies' keyword crash
-if "HTTP_PROXY" in os.environ:
-    del os.environ["HTTP_PROXY"]
-if "HTTPS_PROXY" in os.environ:
-    del os.environ["HTTPS_PROXY"]
-if "http_proxy" in os.environ:
-    del os.environ["http_proxy"]
-if "https_proxy" in os.environ:
-    del os.environ["https_proxy"]
+# Unset proxy variables to prevent httpx 'proxies' keyword crash
+for _var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+    os.environ.pop(_var, None)
 
 load_dotenv()
 
@@ -27,15 +21,20 @@ from export_utils import generate_pdf, generate_docx
 
 app = FastAPI(title="AI Web Research Agent API", version="1.0.0")
 
+# Get allowed origins from env var, fallback to localhost for dev
+ALLOWED_ORIGINS = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://localhost:3001"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,   # Never use ["*"] with credentials
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# In-memory storage for tasks
 tasks: Dict[str, dict] = {}
 
 class StartTaskResponse(BaseModel):
@@ -43,12 +42,9 @@ class StartTaskResponse(BaseModel):
     message: str
 
 async def run_research_task(task_id: str, request: ResearchRequest):
-    """Run the full LangGraph research pipeline and update task state."""
     try:
-        # Immediate status update to show progress
         tasks[task_id]["status"] = "planning"
         tasks[task_id]["state"]["status"] = "planning"
-        tasks[task_id] = tasks[task_id]
         print(f"[TASK {task_id}] Starting research pipeline for: {request.query}")
 
         initial_state = {
@@ -65,7 +61,6 @@ async def run_research_task(task_id: str, request: ResearchRequest):
             status = node_output.get("status", "processing")
             tasks[task_id]["status"] = status
 
-            # Always store the full state so WebSocket can broadcast it
             state_data = {
                 "status": status,
                 "sub_questions": [sq.model_dump() for sq in node_output.get("sub_questions", [])],
@@ -77,15 +72,12 @@ async def run_research_task(task_id: str, request: ResearchRequest):
                 tasks[task_id]["result"] = report.model_dump()
 
             tasks[task_id]["state"] = state_data
-            # Force an update to the tasks dict to ensure visibility
             tasks[task_id] = tasks[task_id]
             print(f"[TASK {task_id}] Node '{node_name}' completed with status '{status}'")
 
-        # After the loop finishes, mark as completed if it hasn't failed
         if tasks[task_id]["status"] != "failed":
             tasks[task_id]["status"] = "completed"
             tasks[task_id]["state"]["status"] = "completed"
-            tasks[task_id] = tasks[task_id]
 
     except Exception as e:
         import traceback
@@ -128,7 +120,8 @@ async def export_pdf(task_id: str):
         raise HTTPException(status_code=404, detail="Report not available")
     report = tasks[task_id].get("result", {})
     pdf_buffer = generate_pdf(report)
-    return StreamingResponse(pdf_buffer, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename=research_report_{task_id}.pdf"})
+    return StreamingResponse(pdf_buffer, media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=research_report_{task_id}.pdf"})
 
 @app.get("/api/research/export/docx/{task_id}")
 async def export_docx(task_id: str):
@@ -136,15 +129,16 @@ async def export_docx(task_id: str):
         raise HTTPException(status_code=404, detail="Report not available")
     report = tasks[task_id].get("result", {})
     docx_buffer = generate_docx(report)
-    return StreamingResponse(docx_buffer, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", headers={"Content-Disposition": f"attachment; filename=research_report_{task_id}.docx"})
+    return StreamingResponse(docx_buffer,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f"attachment; filename=research_report_{task_id}.docx"})
 
 @app.websocket("/api/research/stream/{task_id}")
 async def stream_research(websocket: WebSocket, task_id: str):
     await websocket.accept()
     print(f"[WS] Connection accepted for task {task_id}")
-    
+
     if task_id not in tasks:
-        print(f"[WS] Task {task_id} not found in tasks")
         await websocket.send_json({"error": "Task not found"})
         await websocket.close()
         return
@@ -156,7 +150,6 @@ async def stream_research(websocket: WebSocket, task_id: str):
             current_status = current_task.get("status", "unknown")
             current_state = current_task.get("state", {})
 
-            # Always send if status changed
             if current_status != last_status:
                 await websocket.send_json({
                     "status": current_status,
@@ -165,7 +158,6 @@ async def stream_research(websocket: WebSocket, task_id: str):
                 last_status = current_status
 
             if current_status in ["completed", "failed"]:
-                # Send final state one more time with full data
                 await websocket.send_json({
                     "status": current_status,
                     "data": jsonable_encoder(current_state)
@@ -188,4 +180,4 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)))

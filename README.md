@@ -56,6 +56,17 @@ Runs on port `8000`. This is the brain of the platform, housing the **LangGraph*
 2. **Topic Heatmap (`ResearchHeatmap.tsx`)**: As the AI synthesizes sources, it tracks word frequencies and conceptual overlap. The top 10 concepts are assigned an "Intensity Score" (1-100) and plotted as scaling, color-coded interactive pills.
 3. **Confidence Dashboard (`ConfidenceDashboard.tsx`)**: A trust and transparency module. The agent assigns 0.0 to 1.0 scores for "Source Agreement", "Evidence Strength", and "Hallucination Risk", which are visualized via animated SVG radial progress bars.
 
+## 🌐 Live Deployment
+
+### Frontend (Vercel)
+https://deepsearch-auto.vercel.app/
+
+### Backend API (Railway)
+https://deepsearchauto-autonomousresearchagent-production.up.railway.app
+
+### Health Check Endpoint
+https://deepsearchauto-autonomousresearchagent-production.up.railway.app/api/health
+
 ## ⚙️ Local Setup Instructions
 
 ### 1. Backend Setup
