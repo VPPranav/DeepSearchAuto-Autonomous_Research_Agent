@@ -28,7 +28,7 @@ export default function AboutPage() {
       { name: "WebSockets", desc: "Real-time streaming updates" },
       { name: "Docker", desc: "Containerized deployment" },
       { name: "Vercel", desc: "Frontend hosting" },
-      { name: "Railway", desc: "Backend hosting" },
+      { name: "Render", desc: "Backend hosting" },
     ],
   };
 
@@ -65,7 +65,7 @@ export default function AboutPage() {
               DeepSearch Auto
             </h1>
             <p className="text-slate-300 text-xl leading-relaxed max-w-3xl mx-auto mb-8">
-              An autonomous AI research platform that replicates the capability of enterprise deep-research tools like Perplexity AI. 
+              An autonomous AI research platform that replicates the capability of enterprise deep-research tools like Perplexity AI.
               Built to showcase production-grade AI engineering, full-stack architecture, and autonomous agent systems.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
@@ -86,15 +86,15 @@ export default function AboutPage() {
                 <h2 className="text-3xl font-bold text-slate-100 mb-6">Project Overview</h2>
                 <div className="space-y-4 text-slate-400 leading-relaxed">
                   <p>
-                    DeepSearch Auto is a portfolio-grade autonomous research platform built to demonstrate mastery of modern AI engineering. 
+                    DeepSearch Auto is a portfolio-grade autonomous research platform built to demonstrate mastery of modern AI engineering.
                     It combines a FastAPI backend with LangGraph-orchestrated AI agents that autonomously plan and execute multi-step research workflows.
                   </p>
                   <p>
-                    The system accepts complex research questions, breaks them into targeted sub-questions, performs parallel web searches, 
+                    The system accepts complex research questions, breaks them into targeted sub-questions, performs parallel web searches,
                     scrapes and processes source content, and uses Claude AI to synthesize a comprehensive, citation-backed report.
                   </p>
                   <p>
-                    Real-time progress streaming via WebSockets keeps users informed at every step, while the modular architecture 
+                    Real-time progress streaming via WebSockets keeps users informed at every step, while the modular architecture
                     ensures the platform is scalable, maintainable, and ready for production deployment.
                   </p>
                 </div>
@@ -105,7 +105,7 @@ export default function AboutPage() {
                   { label: "Research Phases", value: "5", sub: "Automated pipeline" },
                   { label: "Parallel Scrapers", value: "15+", sub: "Concurrent tasks" },
                   { label: "AI Model", value: "Claude", sub: "Anthropic Haiku/Sonnet" },
-                  { label: "Deployment", value: "Cloud", sub: "Vercel + Railway" },
+                  { label: "Deployment", value: "Cloud", sub: "Vercel + Render" },
                 ].map((stat, i) => (
                   <div key={i} className="glassmorphism rounded-2xl p-5 text-center border border-white/5">
                     <div className="text-3xl font-bold text-gradient mb-1">{stat.value}</div>
@@ -251,7 +251,7 @@ export default function AboutPage() {
                 <h2 className="text-2xl font-bold text-slate-100 mb-2">Developed by</h2>
                 <h3 className="text-3xl font-bold text-gradient mb-4">Pranav V P</h3>
                 <p className="text-slate-400 mb-6 max-w-lg mx-auto leading-relaxed">
-                  AI Engineer & Full Stack Developer specializing in autonomous agent systems, LLM orchestration, 
+                  AI Engineer & Full Stack Developer specializing in autonomous agent systems, LLM orchestration,
                   and production-grade AI applications. Passionate about building tools that push the boundaries of what&apos;s possible.
                 </p>
                 <div className="flex flex-wrap gap-3 justify-center mb-8">
