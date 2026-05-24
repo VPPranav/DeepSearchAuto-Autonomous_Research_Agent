@@ -10,7 +10,7 @@
 [![Claude](https://img.shields.io/badge/Claude-Haiku-orange?style=flat-square)](https://anthropic.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-[Live Demo](https://deepsearch-auto.vercel.app) · [Backend API](https://deepsearchauto-autonomousresearchagent-production.up.railway.app/api/health) · [Report Bug](https://github.com/your-repo/issues) · [Request Feature](https://github.com/your-repo/issues)
+[Live Demo](https://deepsearch-auto.vercel.app) · [Backend API](https://deepsearchauto-autonomous-research-agent.onrender.com/api/health) · [Report Bug](https://github.com/your-repo/issues) · [Request Feature](https://github.com/your-repo/issues)
 
 </div>
 
@@ -126,7 +126,7 @@ Think of it as your personal AI research analyst: it doesn't just search, it *th
 
 | Service | Platform | Notes |
 |---|---|---|
-| Backend API | Railway | Auto-deploys from GitHub, managed env vars |
+| Backend API | Render | Auto-deploys from GitHub, managed env vars |
 | Frontend | Vercel | Edge-optimized Next.js deployment |
 
 ---
@@ -152,7 +152,7 @@ User submits query
                               │ WebSocket / HTTP
                               ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                       BACKEND (FastAPI / Railway)                   │
+│                       BACKEND (FastAPI / Render)                    │
 │                                                                     │
 │  POST /api/research/start                                           │
 │       │                                                             │
@@ -220,11 +220,12 @@ AI_Web_Research_Agent/
 │   ├── venv/                    # Python virtual environment (local only)
 │   ├── .env                     # Local secrets (never committed)
 │   ├── .env.example             # Template for required env vars
+|   ├── .python-version          # Python version: python-3.11.9(for render)
 │   ├── debug_test.py            # Manual pipeline testing script
-│   ├── Dockerfile               # Container definition for Railway
+│   ├── Dockerfile               # Container definition for Render
 │   ├── export_utils.py          # PDF + DOCX generation logic
 │   ├── main.py                  # FastAPI app: routes, CORS, WebSocket, task runner
-│   ├── Procfile                 # Railway start command: python main.py
+│   ├── Procfile                 # Render start command: python main.py
 │   ├── requirements.txt         # Pinned Python dependencies
 │   ├── runtime.txt              # Python version: python-3.11.9
 │   └── test_graph.py            # LangGraph unit tests
@@ -373,7 +374,7 @@ docker-compose up --build
 | `ANTHROPIC_API_KEY` | ✅ Yes | Your Claude API key from [console.anthropic.com](https://console.anthropic.com) |
 | `SERPAPI_KEY` | ⚠️ Optional | SerpAPI key for real Google search. If missing, mock results are used instead. Get one at [serpapi.com](https://serpapi.com) |
 | `ALLOWED_ORIGINS` | ✅ For prod | Comma-separated list of allowed frontend origins. Example: `https://your-app.vercel.app` |
-| `PORT` | Auto | Set automatically by Railway. Defaults to `8000` locally. |
+| `PORT` | Auto | Set automatically by Render. Defaults to `8000` locally. |
 
 ```env
 # backend/.env
@@ -399,11 +400,11 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
 ## 🚀 Deployment Guide
 
-### Backend → Railway
+### Backend → Render
 
 1. **Push your code to GitHub** (backend folder must be in the repo).
 
-2. Go to [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo** → select your repo.
+2. Go to [render.com](https://render.com) → **New Web Service** → select your repo.
 
 3. In **Settings → Root Directory**, set it to `backend` (if your repo contains both frontend and backend).
 
@@ -411,9 +412,9 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
    ```
    python main.py
    ```
-   This lets Python resolve `$PORT` at runtime — avoid using `$PORT` directly in shell commands on Railway.
+   This lets Python resolve `$PORT` at runtime — avoid using `$PORT` directly in shell commands on Render.
 
-5. Go to **Variables** tab and add:
+5. Go to **Environment Variables** tab and add:
 
    | Key | Value |
    |---|---|
@@ -421,14 +422,14 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
    | `SERPAPI_KEY` | your SerpAPI key (optional) |
    | `ALLOWED_ORIGINS` | `https://your-app.vercel.app` |
 
-6. Railway will build and deploy automatically. Copy your public URL, e.g.:
+6. Render will build and deploy automatically. Copy your public URL, e.g.:
    ```
-   https://your-backend.up.railway.app
+   https://deepsearchauto-autonomous-research-agent.onrender.com
    ```
 
 7. Verify the deployment:
    ```bash
-   curl https://your-backend.up.railway.app/api/health
+   curl https://deepsearchauto-autonomous-research-agent.onrender.com/api/health
    ```
 
 ---
@@ -447,7 +448,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
    | Key | Value |
    |---|---|
-   | `NEXT_PUBLIC_API_URL` | `https://your-backend.up.railway.app` |
+   | `NEXT_PUBLIC_API_URL` | `https://deepsearchauto-autonomous-research-agent.onrender.com` |
 
 6. Click **Deploy**. Vercel builds and publishes your app.
 
@@ -455,7 +456,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
 ### ⚠️ Critical Post-Deploy Checks
 
-**1. CORS** — Your Railway backend must have `ALLOWED_ORIGINS` set to your exact Vercel URL:
+**1. CORS** — Your Render backend must have `ALLOWED_ORIGINS` set to your exact Vercel URL:
 ```
 ALLOWED_ORIGINS=https://deepsearch-auto.vercel.app
 ```
@@ -468,13 +469,13 @@ const WS_URL = API_URL.replace(/^http/, "ws"); // converts https → wss automat
 const ws = new WebSocket(`${WS_URL}/api/research/stream/${taskId}`);
 ```
 
-**3. Railway PORT** — Do NOT use `$PORT` in shell commands (Railway doesn't expand it). Use `python main.py` and let `main.py` read `os.getenv("PORT", 8000)` itself.
+**3. Render PORT** — Do NOT use `$PORT` in shell commands (Render doesn't expand it). Use `python main.py` and let `main.py` read `os.getenv("PORT", 8000)` itself.
 
 ---
 
 ## 📡 API Reference
 
-Base URL: `https://your-backend.up.railway.app`
+Base URL: `https://deepsearchauto-autonomous-research-agent.onrender.com`
 
 ### `POST /api/research/start`
 
@@ -634,9 +635,9 @@ The platform uses a **LocalStorage-based simulated auth** mechanism. This is int
 
 ---
 
-### `Error: Invalid value for '--port': '$PORT' is not a valid integer` (Railway)
+### `Error: Invalid value for '--port': '$PORT' is not a valid integer` (Render)
 
-**Cause:** Railway doesn't expand shell variables in the Start Command field.
+**Cause:** Render doesn't expand shell variables in the Start Command field.
 
 **Fix:** Use `python main.py` as the start command instead of `uvicorn main:app --port $PORT`. Make sure `main.py` ends with:
 ```python
@@ -649,9 +650,9 @@ if __name__ == "__main__":
 
 ### CORS errors in browser console
 
-**Cause:** `ALLOWED_ORIGINS` on Railway doesn't match the Vercel URL, or `allow_origins=["*"]` is used with `allow_credentials=True` (which is invalid per the CORS spec).
+**Cause:** `ALLOWED_ORIGINS` on Render doesn't match the Vercel URL, or `allow_origins=["*"]` is used with `allow_credentials=True` (which is invalid per the CORS spec).
 
-**Fix:** Set `ALLOWED_ORIGINS=https://your-exact-vercel-url.vercel.app` in Railway and ensure `main.py` reads from this env var.
+**Fix:** Set `ALLOWED_ORIGINS=https://your-exact-vercel-url.vercel.app` in Render and ensure `main.py` reads from this env var.
 
 ---
 
@@ -671,7 +672,7 @@ This automatically converts `https://` → `wss://` and `http://` → `ws://`.
 
 **Cause:** `SERPAPI_KEY` environment variable is not set.
 
-**Fix:** Get a free key at [serpapi.com](https://serpapi.com) and add it to Railway environment variables as `SERPAPI_KEY`. Without it, the system returns Wikipedia/Nature/ArXiv mock URLs which may not scrape useful content.
+**Fix:** Get a free key at [serpapi.com](https://serpapi.com) and add it to Render environment variables as `SERPAPI_KEY`. Without it, the system returns Wikipedia/Nature/ArXiv mock URLs which may not scrape useful content.
 
 ---
 
@@ -707,8 +708,8 @@ Contributions are welcome! Here's how to get started:
 | Service | URL |
 |---|---|
 | Frontend | https://deepsearch-auto.vercel.app |
-| Backend API | https://deepsearchauto-autonomousresearchagent-production.up.railway.app |
-| Health Check | https://deepsearchauto-autonomousresearchagent-production.up.railway.app/api/health |
+| Backend API | https://deepsearchauto-autonomous-research-agent.onrender.com |
+| Health Check | https://deepsearchauto-autonomous-research-agent.onrender.com/api/health |
 
 ---
 
